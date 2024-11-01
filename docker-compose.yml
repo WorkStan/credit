@@ -1,14 +1,23 @@
 services:
   api-nginx:
-    image: nginx:1.27-alpine
+    image: nginx:1.27-alpine3.20
     volumes:
       - ./api:/app
       - ./docker/dev/nginx/conf.d:/etc/nginx/conf.d
+    working_dir: /app
     ports:
       - "8080:80"
 
+  api-composer:
+    image: composer:2.8.2
+    user: "1000:1000"
+    volumes:
+      - ./api:/app
+    working_dir: /app
+
   api-php-fpm:
     image: php:8.3-fpm
+    user: "1000:1000"
     environment:
       APP_ENV: dev
       APP_DEBUG: 1
@@ -23,6 +32,7 @@ services:
       MAILER_FROM_EMAIL: mail@app.credit
     volumes:
       - ./api:/app
+    working_dir: /app
     secrets:
       - api_db_password
       - api_mailer_password
